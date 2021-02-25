@@ -22,7 +22,7 @@
             node-key="id"
             highlight-current
             :current-node-key="currentKey"
-            default-expand-all
+            :default-expanded-keys="defaultExpandedKeys"
             :filter-node-method="filterNode"
             @node-click="handleNodeClick"
             ref="tree"
@@ -51,6 +51,7 @@
 import axios from 'axios';
 import marked from 'marked';
 import hljs from 'highlight.js';
+const treeData = require('/tree.json');
 var renderer = new marked.Renderer();
 (renderer.heading = function(text, level) {
   var escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
@@ -92,7 +93,10 @@ export default {
       activeName: '1',
       filterText: '',
       currentKey: this.id,
-      treeData: require('/tree.json'),
+      defaultExpandedKeys: treeData.map((item) => {
+        return item.id;
+      }),
+      treeData: treeData,
       content: '',
       loading: false,
       outline: []
@@ -165,7 +169,7 @@ export default {
     }
   }
   .el-aside {
-    padding: 0 20px;
+    padding: 0 20px 20px;
     resize: horizontal;
     .tabs-layout {
       position: sticky;

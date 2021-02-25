@@ -36,6 +36,7 @@ function tree(data, target, deep) {
   });
 }
 let data = [];
+console.log('#########开始生成./public/docs文档目录');
 tree(data, './public/docs', 1);
-console.log(JSON.stringify(data));
 fs.writeFileSync('./tree.json', JSON.stringify(data));
+console.log('#########./tree.json文档目录生成结束');
