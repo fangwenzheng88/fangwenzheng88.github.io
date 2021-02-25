@@ -7,7 +7,7 @@
 <style lang="less">
 html {
   overflow-x: auto;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 body,
 dl,
