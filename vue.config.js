@@ -3,7 +3,6 @@ const marked = require('marked');
 const renderer = new marked.Renderer();
 
 module.exports = {
-  outputDir: 'docs',
   chainWebpack: (config) => {
     config.module
       .rule('md')
