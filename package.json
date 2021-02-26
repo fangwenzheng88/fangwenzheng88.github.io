@@ -2,7 +2,7 @@
   "name": "fangwenzheng",
   "version": "0.1.0",
   "private": true,
-  "homepage":"https://fangwenzheng88.github.io",
+  "homepage": "https://fangwenzheng88.github.io",
   "scripts": {
     "serve": "node app && vue-cli-service serve",
     "build": "node app && vue-cli-service build",

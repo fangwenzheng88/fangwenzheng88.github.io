@@ -26,7 +26,16 @@
             :filter-node-method="filterNode"
             @node-click="handleNodeClick"
             ref="tree"
-          ></el-tree>
+          >
+            <span class="custom-tree-node" slot-scope="{ node }">
+              <span v-if="node.isLeaf"><i class="el-icon-document"></i></span>
+              <span v-else><i class="el-icon-folder"></i></span>
+              <span>&nbsp;{{ node.label }}</span>
+              <span v-if="!node.isLeaf">
+                &nbsp;({{ node.childNodes.length }})
+              </span>
+            </span>
+          </el-tree>
         </div>
         <ul class="outline-layout" v-else>
           <li
@@ -171,6 +180,7 @@ export default {
   .el-aside {
     padding: 0 20px 20px;
     resize: horizontal;
+    overflow-x: hidden;
     .tabs-layout {
       position: sticky;
       top: 0;
@@ -186,6 +196,7 @@ export default {
   }
   .el-main {
     min-width: 320px;
+    scroll-behavior: smooth;
   }
 
   .outline-layout {
@@ -213,4 +224,28 @@ export default {
     }
   }
 }
+/* .hljs-ln {
+  padding-left: 0 !important;
+  & > li {
+    margin-top: 0 !important;
+  }
+}
+.hljs-ln-numbers {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  text-align: center;
+  color: #ccc;
+  vertical-align: top;
+  padding-right: 5px;
+
+}
+
+.hljs-ln-code {
+  padding-left: 1em;
+} */
 </style>
