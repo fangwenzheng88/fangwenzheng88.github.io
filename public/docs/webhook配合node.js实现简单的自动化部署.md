@@ -111,3 +111,9 @@ echo "####################结束####################"
 > 注意，`nohup`命令不会自动把进程变为"后台任务"，所以必须加上`&`符号。
 >
 > 运行命令后nohup: ignoring input and appending output to ‘nohup.out’，回车即可退出nohup模式
+
+```shell
+# 日志按天输出
+nohup node app.js >> ./log/nohup`date +%Y-%m-%d`.out 2>&1 &
+```
+

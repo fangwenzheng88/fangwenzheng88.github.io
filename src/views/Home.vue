@@ -1,94 +1,34 @@
 <template>
-  <div class="home">
-    <el-container>
-      <el-aside>
-        <div class="tabs-layout">
-          <el-tabs type="card" v-model="activeName">
-            <el-tab-pane label="目录" name="1"></el-tab-pane>
-            <el-tab-pane label="大纲" name="2"></el-tab-pane>
-          </el-tabs>
-        </div>
-        <div v-if="activeName === '1'">
-          <div class="search-layout">
-            <el-input
-              placeholder="输入关键字进行过滤"
-              clearable
-              v-model="filterText"
-            ></el-input>
-          </div>
-          <el-tree
-            class="filter-tree"
-            :data="treeData"
-            node-key="id"
-            highlight-current
-            :current-node-key="currentKey"
-            :default-expanded-keys="defaultExpandedKeys"
-            :filter-node-method="filterNode"
-            @node-click="handleNodeClick"
-            ref="tree"
-          >
-            <span class="custom-tree-node" slot-scope="{ node }">
-              <span v-if="node.isLeaf"><i class="el-icon-document"></i></span>
-              <span v-else><i class="el-icon-folder"></i></span>
-              <span>&nbsp;{{ node.label }}</span>
-              <span v-if="!node.isLeaf">
-                &nbsp;({{ node.childNodes.length }})
-              </span>
-            </span>
-          </el-tree>
-        </div>
-        <ul class="outline-layout" v-else>
-          <li
-            v-for="(item, index) in outline"
-            :key="index"
-            class="outline-item"
-            :class="'outline-level-' + item.level"
-          >
-            <a :href="item.link">{{ item.title }}</a>
-          </li>
-        </ul>
-      </el-aside>
-      <el-main v-loading="loading" element-loading-text="拼命加载中">
-        <div class="markdown-body" v-html="content"></div>
-      </el-main>
-    </el-container>
-    <el-backtop target=".el-main"></el-backtop>
+  <div class="home-container">
+    <AsideTree
+      :show="showAside"
+      :currentKey="currentKey"
+      :treeData="treeData"
+      :outline="outline"
+      @node-click="handleNodeClick"
+    />
+    <div
+      class="page-content"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+    >
+      <i @click="showAside = !showAside" class="el-icon-s-unfold"></i>
+      <div class="markdown-body" v-html="content"></div>
+    </div>
+    <el-backtop target=".markdown-body"></el-backtop>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import marked from 'marked';
-import hljs from 'highlight.js';
-const treeData = require('/tree.json');
-var renderer = new marked.Renderer();
-(renderer.heading = function(text, level) {
-  var escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
-  return `
-    <h${level}>
-      <a class="anchor" name="${escapedText}" href="#${escapedText}">
-        <span class="header-link"></span>
-      </a>
-      <span>${text}</span>
-    </h${level}>
-    `;
-}),
-  marked.setOptions({
-    renderer,
-    gfm: true,
-    pedantic: false,
-    sanitize: false,
-    tables: true,
-    breaks: false,
-    smartLists: true,
-    smartypants: true,
-    highlight: function(code) {
-      return hljs.highlightAuto(code).value;
-    }
-  });
-
+import marked from './marked';
+import AsideTree from './AsideTree';
+import treeData from '/tree.json';
 export default {
   name: 'Home',
+  components: {
+    AsideTree
+  },
   watch: {
     filterText(val) {
       this.$refs.tree.filter(val);
@@ -98,16 +38,21 @@ export default {
     id: String
   },
   data() {
+    var w =
+      window.innerWidth ||
+      document.documentElement.clientWidth ||
+      document.body.clientWidth;
+    let isPC = true;
+    if (w <= 414) {
+      isPC = false;
+    }
     return {
-      activeName: '1',
-      filterText: '',
-      currentKey: this.id,
-      defaultExpandedKeys: treeData.map((item) => {
-        return item.id;
-      }),
-      treeData: treeData,
+      isPC,
+      showAside: true,
       content: '',
       loading: false,
+      currentKey: this.id,
+      treeData: treeData,
       outline: []
     };
   },
@@ -117,10 +62,6 @@ export default {
     }
   },
   methods: {
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
-    },
     renderContent(path) {
       this.loading = true;
       this.content = '';
@@ -140,12 +81,12 @@ export default {
         });
     },
     handleNodeClick(data) {
-      console.log(data);
-      if (data.isLeaf) {
-        this.currentKey = data.id;
-        this.renderContent(data.path);
-        this.$router.push(`/article/${encodeURIComponent(data.path)}`);
+      if (!this.isPC) {
+        this.showAside = false;
       }
+      this.currentKey = data.id;
+      this.renderContent(data.path);
+      this.$router.push(`/article/${encodeURIComponent(data.path)}`);
     },
     getTitle() {
       let nav = [];
@@ -169,83 +110,32 @@ export default {
 </script>
 
 <style lang="less">
-.el-container {
+.home-container {
   height: 100vh;
   min-height: 500px;
-  @media screen and (max-width: 400px) {
-    .el-aside {
-      display: none;
-    }
-  }
-  .el-aside {
-    padding: 0 20px 20px;
-    resize: horizontal;
-    overflow-x: hidden;
-    .tabs-layout {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      padding-top: 20px;
-      background-color: #fff;
-    }
-    .search-layout {
-      position: sticky;
-      top: 76px;
-      z-index: 5;
-    }
-  }
-  .el-main {
+  display: flex;
+  .page-content {
     min-width: 320px;
-    scroll-behavior: smooth;
-  }
-
-  .outline-layout {
-    font-size: 14px;
-    a {
-      color: #333;
+    position: relative;
+    .markdown-body {
+      box-sizing: border-box;
+      padding: 20px;
+      height: 100%;
+      scroll-behavior: smooth;
+      overflow: auto;
     }
-    .outline-item {
-      line-height: 2;
-      &.outline-level-2 {
-        padding-left: 16px;
-      }
-      &.outline-level-3 {
-        padding-left: 32px;
-      }
-      &.outline-level-4 {
-        padding-left: 48px;
-      }
-      &.outline-level-5 {
-        padding-left: 64px;
-      }
-      &.outline-level-6 {
-        padding-left: 80px;
-      }
+    .el-icon-s-unfold {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      z-index: 999;
+      font-size: 16px;
+      padding: 8px 8px 8px 0;
+      border-top-right-radius: 50%;
+      border-bottom-right-radius: 50%;
+      background-color: #f6f8fa;
+      color: #c1c1c1;
     }
   }
 }
-/* .hljs-ln {
-  padding-left: 0 !important;
-  & > li {
-    margin-top: 0 !important;
-  }
-}
-.hljs-ln-numbers {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-
-  text-align: center;
-  color: #ccc;
-  vertical-align: top;
-  padding-right: 5px;
-
-}
-
-.hljs-ln-code {
-  padding-left: 1em;
-} */
 </style>

@@ -42,7 +42,7 @@ body {
   color: #666666;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 12px;
-  padding: 0 10px;
+  padding: 0;
   text-align: left;
 }
 select {
