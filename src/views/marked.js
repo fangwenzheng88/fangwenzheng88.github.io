@@ -2,7 +2,7 @@ import marked from 'marked';
 import hljs from 'highlight.js';
 var renderer = new marked.Renderer();
 renderer.heading = function(text, level) {
-  var escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+  var escapedText = text;
   return `
     <h${level}>
       <a class="anchor" name="${escapedText}" href="#${escapedText}">

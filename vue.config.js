@@ -3,6 +3,16 @@ const marked = require('marked');
 const renderer = new marked.Renderer();
 
 module.exports = {
+  configureWebpack: {
+    externals: {
+      vue: 'Vue',
+      'vue-router': 'VueRouter',
+      vuex: 'Vuex',
+      axios: 'axios',
+      'element-ui': 'ELEMENT',
+      highlight: 'highlight'
+    }
+  },
   chainWebpack: (config) => {
     config.module
       .rule('md')
