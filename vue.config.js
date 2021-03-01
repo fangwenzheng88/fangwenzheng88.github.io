@@ -1,7 +1,4 @@
-const hljs = require('highlight.js');
-const marked = require('marked');
-const renderer = new marked.Renderer();
-
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 module.exports = {
   configureWebpack: {
     externals: {
@@ -10,31 +7,10 @@ module.exports = {
       vuex: 'Vuex',
       axios: 'axios',
       'element-ui': 'ELEMENT',
-      highlight: 'highlight'
+      'highlight.js': 'hljs'
     }
-  },
-  chainWebpack: (config) => {
-    config.module
-      .rule('md')
-      .test(/\.md/)
-      .use('html-loader')
-      .loader('html-loader')
-      .end()
-      .use('markdown-loader')
-      .loader('markdown-loader')
-      .options({
-        renderer,
-        gfm: true,
-        pedantic: false,
-        sanitize: false,
-        tables: true,
-        breaks: false,
-        smartLists: true,
-        smartypants: true,
-        highlight: function(code) {
-          return hljs.highlightAuto(code).value;
-        }
-      })
-      .end();
   }
+  //chainWebpack: (config) => {
+  // config.plugin('webpack-bundle-analyzer').use(BundleAnalyzerPlugin);
+  //}
 };
