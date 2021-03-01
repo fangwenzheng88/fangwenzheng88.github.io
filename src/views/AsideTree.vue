@@ -131,8 +131,14 @@ export default {
     top: 76px;
     z-index: 5;
   }
+  .el-tree {
+    font-size: 14px;
+    color: #333;
+  }
 }
 .outline-layout {
+  list-style: none;
+  padding: 0%;
   font-size: 14px;
   a {
     color: #333;
