@@ -116,6 +116,7 @@ export default {
   display: flex;
   .page-content {
     min-width: 320px;
+    flex-grow: 1;
     position: relative;
     .markdown-body {
       box-sizing: border-box;

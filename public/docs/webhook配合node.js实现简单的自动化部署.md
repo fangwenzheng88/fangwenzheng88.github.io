@@ -97,9 +97,10 @@ echo "####################结束####################"
 
 
 
-# 3. 后台运行app.js
+## 2.3. 后台运行app.js
 
 ```javascript
+[root@VM-0-2-centos ~]# screen
 [root@VM-0-2-centos ~]# nohup node app.js &
 [1] 16545
 [root@VM-0-2-centos ~]# nohup: ignoring input and appending output to ‘nohup.out’
@@ -108,6 +109,8 @@ echo "####################结束####################"
 [root@VM-0-2-centos ~]# 
 ```
 
+> screen //创建 screen 终端，不然关闭ssh链接后程序会关闭
+>
 > 注意，`nohup`命令不会自动把进程变为"后台任务"，所以必须加上`&`符号。
 >
 > 运行命令后nohup: ignoring input and appending output to ‘nohup.out’，回车即可退出nohup模式
