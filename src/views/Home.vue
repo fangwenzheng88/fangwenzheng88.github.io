@@ -29,11 +29,6 @@ export default {
   components: {
     AsideTree
   },
-  watch: {
-    filterText(val) {
-      this.$refs.tree.filter(val);
-    }
-  },
   props: {
     id: String
   },

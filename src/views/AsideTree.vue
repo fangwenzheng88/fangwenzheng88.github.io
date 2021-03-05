@@ -79,6 +79,11 @@ export default {
       }
     }
   },
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
   data() {
     return {
       activeName: '1',
