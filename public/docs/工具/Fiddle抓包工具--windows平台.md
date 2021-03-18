@@ -46,7 +46,8 @@ Fiddler会扑获浏览器的http请求，但是要抓取https的JS内容，Fiddl
 	- 指定只显示互联网（Internet）的内容；
 - `-No Host Filter`：第二个选择框
 	- `-No Host Filter`：无HOST过滤；
-	- `Hide the following Hosts`：只显示如下HOST；
+	- `Hide the following Hosts`：隐藏如下HOST；
+	- `Show only the following Hosts`：只显示如下HOST；
 	- `Flag the following Hosts`：加粗显示如下HOST；
 - 输入框输入规则
 	- 输入多个HOST，多个之前用半角逗号或者回车分隔；
