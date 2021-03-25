@@ -99,6 +99,8 @@ echo "####################结束####################"
 
 ## 2.3. 后台运行app.js
 
+### 2.3.1 nohup方式
+
 ```javascript
 [root@VM-0-2-centos ~]# screen
 [root@VM-0-2-centos ~]# nohup node app.js &
@@ -115,8 +117,34 @@ echo "####################结束####################"
 >
 > 运行命令后nohup: ignoring input and appending output to ‘nohup.out’，回车即可退出nohup模式
 
+### 2.3.2 pm2(推荐)
+
 ```shell
-# 日志按天输出
-nohup node app.js >> ./log/nohup`date +%Y-%m-%d`.out 2>&1 &
+# 安装pm2
+[root@VM-0-2-centos bin]# npm install -g pm2
+# 查询nodejs安装路径
+[root@VM-0-2-centos bin]# whereis node
+node: /usr/local/bin/node
+[root@VM-0-2-centos bin]# cd /usr/local/bin/
+[root@VM-0-2-centos bin]# ll
+total 11940
+-rwxr-xr-x 1 root root 12219168 Dec 29 17:06 docker-compose
+lrwxrwxrwx 1 root root       33 Dec 28 17:44 node -> /usr/local/node-v10.15.3/bin/node
+lrwxrwxrwx 1 root root       32 Dec 28 17:44 npm -> /usr/local/node-v10.15.3/bin/npm
+lrwxrwxrwx 1 root root       27 Dec 30 19:44 pip3 -> /usr/local/python3/bin/pip3
+lrwxrwxrwx 1 root root       32 Mar 19 16:27 pm2 -> /usr/local/node-v10.15.3/bin/pm2
+lrwxrwxrwx 1 root root       30 Dec 30 19:44 python3 -> /usr/local/python3/bin/python3
+[root@VM-0-2-centos bin]# cd /usr/local/node-v10.15.3/bin
+[root@VM-0-2-centos bin]# ls
+node  npm  npx  pm2  pm2-dev  pm2-docker  pm2-runtime
+# 将pm2加至本地的环境变量(需要知道nodejs安装位置)
+[root@VM-0-2-centos bin]# ln -s /usr/local/node-v10.15.3/bin/pm2 /usr/local/bin
 ```
+
+```shell
+# 运行app.js
+pm2 start app.js
+```
+
+
 
