@@ -185,7 +185,7 @@ export default {
     scroll-behavior: smooth;
     .markdown-body {
       box-sizing: border-box;
-      height: 100%;
+      padding-bottom: 60px;
     }
   }
 }
