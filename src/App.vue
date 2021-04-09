@@ -7,7 +7,7 @@
 <style lang="less">
 html,
 body {
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: auto;
   margin: 0;
   padding: 0;

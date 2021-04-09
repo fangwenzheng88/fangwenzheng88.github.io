@@ -98,7 +98,8 @@ export default {
     login() {
       this.$prompt('请输入账户', '提示', {
         confirmButtonText: '确定',
-        cancelButtonText: '取消'
+        cancelButtonText: '取消',
+        customClass: 'el-custom-message-box'
       })
         .then(({ value }) => {
           if (value === 'admin') {
@@ -188,5 +189,10 @@ export default {
       padding-bottom: 60px;
     }
   }
+}
+</style>
+<style>
+.el-custom-message-box {
+  max-width: 80%;
 }
 </style>
