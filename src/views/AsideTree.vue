@@ -1,10 +1,16 @@
 <template>
-  <div class="aside-tree-container" :style="asideStyle">
+  <div class="aside-tree-container">
     <div class="tabs-layout">
       <el-tabs type="card" v-model="activeName">
         <el-tab-pane label="目录" name="1"></el-tab-pane>
         <el-tab-pane label="大纲" name="2"></el-tab-pane>
       </el-tabs>
+      <el-button
+        @click="login"
+        icon="el-icon-s-custom"
+        circle
+        size="mini"
+      ></el-button>
     </div>
     <div v-if="activeName === '1'">
       <div class="search-layout">
@@ -50,11 +56,6 @@
 export default {
   name: 'AsideTree',
   props: {
-    show: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
     treeData: {
       type: Array,
       required: true
@@ -66,17 +67,6 @@ export default {
     currentKey: {
       type: [Number, String],
       required: true
-    }
-  },
-  computed: {
-    asideStyle() {
-      if (!this.show) {
-        return {
-          marginLeft: '-' + this.$el.offsetWidth + 'px'
-        };
-      } else {
-        return null;
-      }
     }
   },
   watch: {
@@ -106,6 +96,9 @@ export default {
       if (data.isLeaf) {
         this.$emit('node-click', data);
       }
+    },
+    login() {
+      this.$emit('login');
     }
   }
 };
@@ -116,11 +109,11 @@ export default {
   position: relative;
   resize: horizontal;
   width: 300px;
-  transition: margin-left 500ms;
   box-sizing: border-box;
   flex-grow: 0;
   flex-shrink: 0;
   border: 1px solid #f6f8fa;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 20px 20px 20px;
@@ -130,6 +123,11 @@ export default {
     z-index: 5;
     padding-top: 20px;
     background-color: #fff;
+    /deep/ .el-button {
+      position: absolute;
+      right: 0;
+      top: 25px;
+    }
   }
   .search-layout {
     position: sticky;

@@ -1,21 +1,24 @@
 <template>
   <div class="home-container">
-    <AsideTree
-      :show="showAside"
-      :currentKey="currentKey"
-      :treeData="treeData"
-      :outline="outline"
-      @node-click="handleNodeClick"
-    />
+    <div class="subnav" ref="subnav" :style="asideStyle">
+      <AsideTree
+        :show="showAside"
+        :currentKey="currentKey"
+        :treeData="treeData"
+        :outline="outline"
+        @node-click="handleNodeClick"
+        @login="login"
+      />
+      <i @click="showAside = !showAside" class="el-icon-s-unfold"></i>
+    </div>
     <div
       class="page-content"
       v-loading="loading"
       element-loading-text="拼命加载中"
     >
-      <i @click="showAside = !showAside" class="el-icon-s-unfold"></i>
       <div class="markdown-body" v-html="content"></div>
     </div>
-    <el-backtop target=".markdown-body"></el-backtop>
+    <el-backtop target=".page-content"></el-backtop>
   </div>
 </template>
 
@@ -47,16 +50,64 @@ export default {
       content: '',
       loading: false,
       currentKey: this.id,
-      treeData: treeData,
+      haspermission: false,
       outline: []
     };
+  },
+  computed: {
+    asideStyle() {
+      if (!this.showAside) {
+        return {
+          marginLeft: '-' + this.$refs.subnav.offsetWidth + 'px'
+        };
+      } else {
+        return null;
+      }
+    },
+    treeData() {
+      let _treeData = treeData;
+      if (!this.haspermission) {
+        _treeData = filterNode(_treeData);
+      }
+      return _treeData;
+
+      function filterNode(list) {
+        let _list = list.filter((item) => {
+          if (item.label.startsWith('_')) {
+            return false;
+          } else {
+            if (item.children && item.children.length > 0) {
+              return filterNode(item.children);
+            }
+            return true;
+          }
+        });
+        return _list;
+      }
+    }
   },
   created() {
     if (this.id) {
       this.renderContent(decodeURIComponent(this.id));
     }
+    if (localStorage.getItem('account') === 'admin') {
+      this.haspermission = true;
+    }
   },
   methods: {
+    login() {
+      this.$prompt('请输入账户', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      })
+        .then(({ value }) => {
+          if (value === 'admin') {
+            this.haspermission = true;
+            localStorage.setItem('account', value);
+          }
+        })
+        .catch(() => {});
+    },
     renderContent(path) {
       this.loading = true;
       this.content = '';
@@ -109,20 +160,12 @@ export default {
   height: 100vh;
   min-height: 500px;
   display: flex;
-  .page-content {
-    min-width: 320px;
-    flex-grow: 1;
+  .subnav {
     position: relative;
-    .markdown-body {
-      box-sizing: border-box;
-      padding: 20px;
-      height: 100%;
-      scroll-behavior: smooth;
-      overflow: auto;
-    }
+    transition: margin-left 500ms;
     .el-icon-s-unfold {
       position: absolute;
-      left: 0;
+      right: -24px;
       top: 50%;
       z-index: 999;
       font-size: 16px;
@@ -131,6 +174,18 @@ export default {
       border-bottom-right-radius: 50%;
       background-color: #f6f8fa;
       color: #c1c1c1;
+    }
+  }
+  .page-content {
+    flex-grow: 1;
+    position: relative;
+    min-width: 320px;
+    overflow: auto;
+    padding: 20px;
+    scroll-behavior: smooth;
+    .markdown-body {
+      box-sizing: border-box;
+      height: 100%;
     }
   }
 }

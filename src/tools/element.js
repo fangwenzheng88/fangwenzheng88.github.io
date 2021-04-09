@@ -1,5 +1,14 @@
 import Vue from 'vue';
-import { Input, Tabs, TabPane, Tree, Loading, Icon, Backtop } from 'element-ui';
+import {
+  Input,
+  Tabs,
+  TabPane,
+  Tree,
+  Loading,
+  Icon,
+  Backtop,
+  MessageBox
+} from 'element-ui';
 
 Vue.use(Input);
 Vue.use(Tabs);
@@ -11,3 +20,4 @@ Vue.use(Backtop);
 Vue.use(Loading.directive);
 
 Vue.prototype.$loading = Loading.service;
+Vue.prototype.$prompt = MessageBox.prompt;

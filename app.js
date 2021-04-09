@@ -16,6 +16,7 @@ function tree(data, target, deep) {
         id: filePath,
         label: item,
         isLeaf: true,
+        level: deep,
         path: filePath,
         children: []
       }); // 存放在files数组中
@@ -25,6 +26,7 @@ function tree(data, target, deep) {
         id: filePath,
         label: item,
         isLeaf: false,
+        level: deep,
         path: filePath,
         children: []
       };
