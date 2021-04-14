@@ -8,4 +8,4 @@ services:
       - ../dist:/var/www/html:ro
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
-      - "80:80"
+      - "8080:8080"
