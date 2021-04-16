@@ -70,7 +70,7 @@ export default {
     },
     currentKey: {
       type: [Number, String],
-      required: true
+      required: false
     }
   },
   watch: {
@@ -82,7 +82,7 @@ export default {
     return {
       activeName: '1',
       filterText: '',
-      defaultExpandedKeys: [this.currentKey]
+      defaultExpandedKeys: this.currentKey ? [this.currentKey] : []
     };
   },
   methods: {

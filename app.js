@@ -18,8 +18,7 @@ function tree(data, target, deep) {
           label: item,
           isFile: true,
           level: deep,
-          path: filePath,
-          children: []
+          path: filePath
         }); // 存放在files数组中
       }
     } else {
@@ -42,5 +41,30 @@ function tree(data, target, deep) {
 let data = [];
 console.log('#########开始生成./public/docs文档目录');
 tree(data, './public/docs', 1);
+function loopTree(data, parent) {
+  data.forEach((item, index) => {
+    if (item.children instanceof Array && item.children.length === 0) {
+      parent && parent.children.splice(index, 1);
+    }
+
+    item.children &&
+      item.children.length > 0 &&
+      loopTree(item.children, item, index);
+  });
+
+  return data;
+}
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
+data = loopTree(data);
 fs.writeFileSync('./tree.json', JSON.stringify(data));
 console.log('#########./tree.json文档目录生成结束');
