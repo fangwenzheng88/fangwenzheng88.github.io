@@ -31,11 +31,15 @@
         @node-click="handleNodeClick"
         ref="tree"
       >
-        <span class="custom-tree-node" slot-scope="{ node }">
-          <span v-if="node.isLeaf"><i class="el-icon-document"></i></span>
-          <span v-else><i class="el-icon-folder"></i></span>
-          <span>&nbsp;{{ node.label }}</span>
-          <span v-if="!node.isLeaf">&nbsp;({{ node.childNodes.length }})</span>
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span v-if="data.isFile">
+            <i class="el-icon-document"></i>
+          </span>
+          <span v-else>
+            <i class="el-icon-folder"></i>
+          </span>
+          <span>&nbsp;{{ data.label }}</span>
+          <span v-if="!data.isFile">&nbsp;({{ node.childNodes.length }})</span>
         </span>
       </el-tree>
     </div>
@@ -78,9 +82,7 @@ export default {
     return {
       activeName: '1',
       filterText: '',
-      defaultExpandedKeys: this.treeData.map((item) => {
-        return item.id;
-      })
+      defaultExpandedKeys: [this.currentKey]
     };
   },
   methods: {
@@ -93,7 +95,7 @@ export default {
     },
     handleNodeClick(data) {
       console.log(data);
-      if (data.isLeaf) {
+      if (data.isFile) {
         this.$emit('node-click', data);
       }
     },

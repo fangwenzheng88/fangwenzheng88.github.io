@@ -12,20 +12,22 @@ function tree(data, target, deep) {
       .replace(/^public/, '');
     if (stat.isFile()) {
       // 如果是一个文件
-      data.push({
-        id: filePath,
-        label: item,
-        isLeaf: true,
-        level: deep,
-        path: filePath,
-        children: []
-      }); // 存放在files数组中
+      if (/(\.md|\.html|\.htm)$/.test(filePath)) {
+        data.push({
+          id: filePath,
+          label: item,
+          isFile: true,
+          level: deep,
+          path: filePath,
+          children: []
+        }); // 存放在files数组中
+      }
     } else {
       // 如果不是一个文件
       let treeNode = {
         id: filePath,
         label: item,
-        isLeaf: false,
+        isFile: false,
         level: deep,
         path: filePath,
         children: []
