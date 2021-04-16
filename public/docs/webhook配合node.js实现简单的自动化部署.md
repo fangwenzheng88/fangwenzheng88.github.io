@@ -1,7 +1,3 @@
-
-
-
-
 # 1. 配置github
 
 进入项目-->选择Setting-->点击Webhooks
