@@ -96,7 +96,11 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       if (data.isFile) {
-        this.$emit('node-click', data);
+        if (/(\.html|\.htm)$/.test(data.path)) {
+          window.open(data.path);
+        } else {
+          this.$emit('node-click', data);
+        }
       }
     },
     login() {
