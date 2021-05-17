@@ -187,6 +187,9 @@ export default {
     .markdown-body {
       box-sizing: border-box;
       padding-bottom: 60px;
+      strong {
+        color: #ff6a00;
+      }
     }
   }
 }
