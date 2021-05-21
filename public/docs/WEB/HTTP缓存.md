@@ -1,10 +1,8 @@
-[toc]
-
 # 1. HTTP缓存
 
 缓存这东西，第一次必须获取到资源后，然后根据返回的信息来告诉如何缓存资源，可能采用的是强缓存，也可能告诉客户端浏览器是协商缓存，这都需要根据响应的header内容来决定的。
 
-HTTP缓存分为两种：==强缓存==和==协商缓存==。强缓存如果命中缓存不需要和服务器端发生交互，而协商缓存不管是否命中都要和服务器端发生交互，强制缓存的优先级高于协商缓存。
+HTTP缓存分为两种：**强缓存**和**协商缓存**。强缓存如果命中缓存不需要和服务器端发生交互，而协商缓存不管是否命中都要和服务器端发生交互，强制缓存的优先级高于协商缓存。
 
 浏览器第一次获取资源，在后续在进行请求时：
 
@@ -96,5 +94,139 @@ HTTP缓存分为两种：==强缓存==和==协商缓存==。强缓存如果命�
 
 注意🔊：实际使用 `ETag/Last-modified` 要注意保持一致性，做负载均衡和反向代理的话可能会出现不一致的情况。计算 `ETag` 也是需要占用资源的，如果修改不是过于频繁，看自己的需求用 `Cache-Control` 是否可以满足。
 
-
 ![](http://fang.images.fangwenzheng.top/20200415002.png)
+
+
+
+
+
+
+
+
+
+## 3. 缓存位置
+
+![img](http://fang.images.fangwenzheng.top/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031392f312f352f313638316332316530343535326637373f773d3232313326683d39343826663d706e6726733d333131313733)
+
+从缓存位置上来说分为四种，并且各自有优先级，当依次查找缓存且都没有命中的时候，才会去请求网络。
+
+- Service Worker
+- Memory Cache
+- Disk Cache
+- Push Cache
+
+### 1. Service Worker
+
+Service Worker 是运行在浏览器背后的独立线程，一般可以用来实现缓存功能。使用 Service Worker的话，传输协议必须为 HTTPS。因为 Service Worker 中涉及到请求拦截，所以必须使用 HTTPS 协议来保障安全。**Service Worker 的缓存与浏览器其他内建的缓存机制不同，它可以让我们自由控制缓存哪些文件、如何匹配缓存、如何读取缓存，并且缓存是持续性的**。
+
+Service Worker 实现缓存功能一般分为三个步骤：首先需要先注册 Service Worker，然后监听到 install 事件以后就可以缓存需要的文件，那么在下次用户访问的时候就可以通过拦截请求的方式查询是否存在缓存，存在缓存的话就可以直接读取缓存文件，否则就去请求数据。
+
+当 Service Worker 没有命中缓存的时候，我们需要去调用 fetch 函数获取数据。也就是说，如果我们没有在 Service Worker 命中缓存的话，会根据缓存查找优先级去查找数据。但是不管我们是从 Memory Cache 中还是从网络请求中获取的数据，浏览器都会显示我们是从 Service Worker 中获取的内容。
+
+### 2. Memory Cache
+
+Memory Cache 也就是内存中的缓存，主要包含的是当前中页面中已经抓取到的资源,例如页面上已经下载的样式、脚本、图片等。读取内存中的数据肯定比磁盘快,内存缓存虽然读取高效，可是缓存持续性很短，会随着进程的释放而释放。 **一旦我们关闭 Tab 页面，内存中的缓存也就被释放了**。
+
+**那么既然内存缓存这么高效，我们是不是能让数据都存放在内存中呢？**
+这是不可能的。计算机中的内存一定比硬盘容量小得多，操作系统需要精打细算内存的使用，所以能让我们使用的内存必然不多。
+
+当我们访问过页面以后，再次刷新页面，可以发现很多数据都来自于内存缓存
+[![img](http://fang.images.fangwenzheng.top/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031392f312f322f313638306631666333396464633237373f773d38383026683d31363126663d706e6726733d3334363632)](https://camo.githubusercontent.com/5b11ba66803adc608e11dba4e1801a4767bcf0e5a8322c79fe3559fd7e3abdaf/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031392f312f322f313638306631666333396464633237373f773d38383026683d31363126663d706e6726733d3334363632)
+
+内存缓存中有一块重要的缓存资源是preloader相关指令（例如`<link rel="prefetch">`）下载的资源。总所周知preloader的相关指令已经是页面优化的常见手段之一，它可以一边解析js/css文件，一边网络请求下一个资源。
+
+需要注意的事情是，**内存缓存在缓存资源时并不关心返回资源的HTTP缓存头Cache-Control是什么值，同时资源的匹配也并非仅仅是对URL做匹配，还可能会对Content-Type，CORS等其他特征做校验**。
+
+### 3. Disk Cache
+
+Disk Cache 也就是存储在硬盘中的缓存，读取速度慢点，但是什么都能存储到磁盘中，**比之 Memory Cache 胜在容量和存储时效性上**。
+
+在所有浏览器缓存中，Disk Cache 覆盖面基本是最大的。它会根据 HTTP Herder 中的字段判断哪些资源需要缓存，哪些资源可以不请求直接使用，哪些资源已经过期需要重新请求。并且即使在跨站点的情况下，相同地址的资源一旦被硬盘缓存下来，就不会再次去请求数据。绝大部分的缓存都来自 Disk Cache，关于 HTTP 的协议头中的缓存字段，我们会在下文进行详细介绍。
+
+**浏览器会把哪些文件丢进内存中？哪些丢进硬盘中？**
+关于这点，网上说法不一，不过以下观点比较靠得住：
+
+- 对于大文件来说，大概率是不存储在内存中的，反之优先
+- 当前系统内存使用率高的话，文件优先存储进硬盘
+
+### 4. Push Cache
+
+Push Cache（推送缓存）是 HTTP/2 中的内容，当以上三种缓存都没有命中时，它才会被使用。**它只在会话（Session）中存在，一旦会话结束就被释放，并且缓存时间也很短暂**，在Chrome浏览器中只有5分钟左右，同时它也并非严格执行HTTP头中的缓存指令。
+
+Push Cache 在国内能够查到的资料很少，也是因为 HTTP/2 在国内不够普及。这里推荐阅读`Jake Archibald`的 [HTTP/2 push is tougher than I thought](https://jakearchibald.com/2017/h2-push-tougher-than-i-thought/) 这篇文章，文章中的几个结论：
+
+- 所有的资源都能被推送，并且能够被缓存,但是 Edge 和 Safari 浏览器支持相对比较差
+- 可以推送 no-cache 和 no-store 的资源
+- 一旦连接被关闭，Push Cache 就被释放
+- 多个页面可以使用同一个HTTP/2的连接，也就可以使用同一个Push Cache。这主要还是依赖浏览器的实现而定，出于对性能的考虑，有的浏览器会对相同域名但不同的tab标签使用同一个HTTP连接。
+- Push Cache 中的缓存只能被使用一次
+- 浏览器可以拒绝接受已经存在的资源推送
+- 你可以给其他域名推送资源
+
+如果以上四种缓存都没有命中的话，那么只能发起请求来获取资源了。
+
+那么为了性能上的考虑，大部分的接口都应该选择好缓存策略，**通常浏览器缓存策略分为两种：强缓存和协商缓存，并且缓存策略都是通过设置 HTTP Header 来实现的**。
+
+
+
+
+
+当浏览器对一个资源（比如一个外链的 a.js）进行请求的时候会发生什么？请从缓存的角度大概说下：
+
+![img](http://fang.images.fangwenzheng.top/91ad3e3930b6f53a030aac3e24276de4ce742a20.png@1320w_316h.webp)
+
+调用 Service Worker 的 fetch 事件获取资源；
+
+- 查看 memory cache；
+- 查看 disk cache；这里又细分：
+- 如果有强制缓存且未失效，则使用强制缓存，不请求服务器。这时的状态码全部是 200；
+- 如果有强制缓存但已失效，使用协商缓存，比较后确定 304 还是 200；
+- 发送网络请求，等待网络响应；
+- 把响应内容存入 disk cache (如果请求头信息配置可以存的话)；
+- 把响应内容的引用存入 memory cache (无视请求头信息的配置，除了 no-store 之外)；
+- 把响应内容存入 Service Worker 的 Cache Storage (如果 Service Worker 的脚本调用了 cache.put())；
+
+
+
+### 5. 例子
+
+
+
+访问https://heyingye.github.io/ –> 200 –> 关闭博客的标签页 –> 重新打开https://heyingye.github.io/ –> 200(from disk cache) –> 刷新 –> 200(from memory cache)
+
+过程如下：
+
+- 访问https://heyingye.github.io/
+
+  <img src="https://mmbiz.qpic.cn/mmbiz_png/meG6Vo0Mevgq38cXiaLvaxNIiatrA806UAoUR3vY0CNxyI2YRvLwCSKKWFAmyXkEJGgoJn7bnVZU9RBz7YSibgKrg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:50%;" />
+
+- 关闭博客的标签页
+
+- 重新打开https://heyingye.github.io/
+
+  <img src="https://mmbiz.qpic.cn/mmbiz_png/meG6Vo0Mevgq38cXiaLvaxNIiatrA806UA5flIcnic2OEr667lx3EHyEgpyfOBY0QiaZL70xGPGYbibwNmhGWmmD3WQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:50%;" />
+
+- 刷新
+
+  <img src="https://mmbiz.qpic.cn/mmbiz_png/meG6Vo0Mevgq38cXiaLvaxNIiatrA806UAdZia80PYvZ9QBKeZxb6Sf7WYwBAbZ5XtqJmoXwCOmLJnz6WZBKhUhicA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:50%;" />
+
+对于这个问题，我们需要了解内存缓存(from memory cache)和硬盘缓存(from disk cache)，如下:
+
+- 内存缓存(from memory cache)：内存缓存具有两个特点，分别是快速读取和时效性：
+- 快速读取：内存缓存会将编译解析后的文件，直接存入该进程的内存中，占据该进程一定的内存资源，以方便下次运行使用时的快速读取。
+- 时效性：一旦该进程关闭，则该进程的内存则会清空。
+- 硬盘缓存(from disk cache)：硬盘缓存则是直接将缓存写入硬盘文件中，读取缓存需要对该缓存存放的硬盘文件进行I/O操作，然后重新解析该缓存内容，读取复杂，速度比内存缓存慢。
+
+在浏览器中，浏览器会在`js`和图片等文件解析执行后直接存入内存缓存中，那么当刷新页面时只需直接从内存缓存中读取`(from memory cache)`；而`css`文件则会存入硬盘文件中，所以每次渲染页面都需要从硬盘读取缓存`(from disk cache)`。
+
+
+
+
+
+
+
+
+
+**参考文章**
+
+- [深入理解浏览器的缓存机制](https://github.com/ljianshu/Blog/issues/23)

@@ -18,11 +18,8 @@
 
 
 
-
-
-
-
 **参考文档**
 
 - [深入响应式原理](https://cn.vuejs.org/v2/guide/reactivity.html)
 
+- [最简化 VUE的响应式原理](https://zhuanlan.zhihu.com/p/88648401)
