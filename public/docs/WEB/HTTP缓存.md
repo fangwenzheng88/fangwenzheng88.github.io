@@ -8,7 +8,7 @@ HTTP缓存分为两种：==强缓存==和==协商缓存==。强缓存如果命�
 
 浏览器第一次获取资源，在后续在进行请求时：
 
-![](http://fang.images.fangwenzheng.top/20200415001.png)
+<img src="http://fang.images.fangwenzheng.top/20200415001.png" style="zoom:80%;" />
 
 ## 1.1. 强缓存
 
@@ -24,19 +24,19 @@ HTTP缓存分为两种：==强缓存==和==协商缓存==。强缓存如果命�
 
 ### 1.1.1. Expires
 
-[Expires](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Expires) 响应头包含日期/时间，即在此时候之后，响应过期。有一个问题是由于使用具体时间，如果时间表示出错或者没有转换到正确的时区都可能造成缓存生命周期出错。并且 `Expires` 是 `HTTP/1.0` 的标准，现在更倾向于用 `HTTP/1.1` 中定义的 `Cache-Control`。如果在Cache-Control响应头设置了 "max-age" 或者 "s-max-age" 指令，那么 Expires 头会被忽略。
+[Expires](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Expires) 响应头包含日期/时间，即在此时候之后，响应过期。有一个问题是由于使用具体时间，如果时间表示出错或者没有转换到正确的时区都可能造成缓存生命周期出错。并且 `Expires` 是 `HTTP/1.0` 的标准，现在更倾向于用 `HTTP/1.1` 中定义的 `Cache-Control`。如果在`Cache-Control`响应头设置了 "`max-age`" 或者 "`s-max-age`" 指令，那么 `Expires` 头会被忽略。
 
-缺点：使用的是绝对时间，服务器的时间和浏览器的时间可能并不一致，那服务器返回的这个过期时间可能就是不准确的。因此这种方式很快在后来的HTTP1.1版本中被抛弃了。
+缺点：使用的是绝对时间，服务器的时间和浏览器的时间可能并不一致，那服务器返回的这个过期时间可能就是不准确的。因此这种方式很快在后来的`HTTP1.1`版本中被抛弃了。
 
 ### 1.1.2. Cache-Control
 
-在HTTP1.1中，采用了一个非常关键的字段：Cache-Control。这个字段也是存在于，它和Expires本质的不同在于它并没有采用具体的过期时间点这个方式，而是采用过期时长来控制缓存，对应的字段是max-age。
+在`HTTP1.1`中，采用了一个非常关键的字段：`Cache-Control`。这个字段也是存在于，它和Expires本质的不同在于它并没有采用具体的过期时间点这个方式，而是采用过期时长来控制缓存，对应的字段是`max-age`。
 
 [Cache-Control](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control) 可以由多个字段组合而成，主要有以下几个取值：
 
 **到期时间**
 
-1. `max-age=<seconds>` 设置缓存存储的最大周期，超过这个时间缓存被认为过期(单位秒)。与Expires相反，时间是相对于请求的时间。例如设置 `Cache-Control:max-age=31536000`，也就是说缓存有效期为（31536000 / 24 / 60 * 60）天，第一次访问这个资源的时候，服务器端也返回了 `Expires` 字段，并且过期时间是一年后。
+1. `max-age=<seconds>` 设置缓存存储的最大周期，超过这个时间缓存被认为过期(单位秒)。与`Expires`相反，时间是相对于请求的时间。例如设置 `Cache-Control:max-age=31536000`，也就是说缓存有效期为（31536000 / 24 / 60 * 60）天，第一次访问这个资源的时候，服务器端也返回了 `Expires` 字段，并且过期时间是一年后。
 
 ![](http://fang.images.fangwenzheng.top/20200415140058.png)
 
@@ -72,14 +72,14 @@ HTTP缓存分为两种：==强缓存==和==协商缓存==。强缓存如果命�
 
 ![](http://fang.images.fangwenzheng.top/20200415141213.png)
 
-    缺点：
-    1、某些服务端不能获取精确的修改时间 
-    2、文件修改时间改了，但文件内容却没有变
-    
-    注意🔊:
-    如果响应头中有 `Last-modified` 而没有 `Expire` 或 `Cache-Control`
-    时，浏览器会有自己的算法来推算出一个时间缓存该文件多久，不同浏览器得出的
-    时间不一样，所以 `Last-modified` 要记得配合 `Expires/Cache-Control` 使用。
+**缺点：**
+1、某些服务端不能获取精确的修改时间 
+2、文件修改时间改了，但文件内容却没有变
+
+**注意🔊:**
+如果响应头中有 `Last-modified` 而没有 `Expire` 或 `Cache-Control`
+时，浏览器会有自己的算法来推算出一个时间缓存该文件多久，不同浏览器得出的
+时间不一样，所以 `Last-modified` 要记得配合 `Expires/Cache-Control` 使用。
 
 ### 1.2.2. Etag/If-None-Match
 

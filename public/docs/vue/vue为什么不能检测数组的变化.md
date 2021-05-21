@@ -67,3 +67,10 @@ observe(arr)
 
 在`defineReactive`的`Object.defineProperty`的set中，加一行`console.log`，可以发现，当点击按钮2时，控制台会输出“set 0”，更加确切的说明`arr[index]=0`被`set`检测到了。
 
+
+
+**参考：**
+
+- [为什么Vue3.0使用Proxy实现数据监听(defineProperty表示不背这个锅)](https://www.jb51.net/article/171869.htm)
+- [记一次思否问答的问题思考：Vue为什么不能检测数组变动](https://segmentfault.com/a/1190000015783546#comment-area)
+
