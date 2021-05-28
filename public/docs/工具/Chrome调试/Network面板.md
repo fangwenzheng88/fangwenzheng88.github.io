@@ -176,3 +176,17 @@
 
 ![](http://fang.images.fangwenzheng.top/20200408091934.png)
 
+
+
+
+
+
+
+
+
+
+
+## 参考资料
+
+- [Devtools 老师傅养成[5] - Network 面板](https://mp.weixin.qq.com/s?__biz=MzA5NjM5MjM1Nw==&mid=2650284112&idx=1&sn=e5d273170f7236e9ab5f81d50010f423&chksm=88bc459abfcbcc8ca77ec31a20ef2c85a476c07405c23f807d0f8b94f9dd6c5697eeb92fc409&cur_album_id=1349545506497855489&scene=189#rd)
+

@@ -1,7 +1,7 @@
 <template>
   <div class="aside-tree-container">
     <div class="tabs-layout">
-      <el-tabs type="card" v-model="activeName">
+      <el-tabs type="card" v-model="activeName" @tab-click="changeTab">
         <el-tab-pane label="目录" name="1"></el-tab-pane>
         <el-tab-pane label="大纲" name="2"></el-tab-pane>
       </el-tabs>
@@ -79,13 +79,31 @@ export default {
     }
   },
   data() {
+    let activeName = '1';
+    if (this.$route.query.outline === 'true') {
+      activeName = '2';
+    }
     return {
-      activeName: '1',
+      activeName,
       filterText: '',
       defaultExpandedKeys: this.currentKey ? [this.currentKey] : []
     };
   },
   methods: {
+    changeTab({ name }) {
+      let outline = false;
+      if (name === '2') {
+        outline = true;
+      }
+      window.history.replaceState(
+        undefined,
+        undefined,
+        window.location.origin +
+          window.location.pathname +
+          '?outline=' +
+          outline
+      );
+    },
     resize(e) {
       console.log('resize', e);
     },

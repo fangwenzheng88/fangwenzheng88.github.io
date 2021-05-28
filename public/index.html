@@ -12,8 +12,15 @@
   <link href="https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.css" rel="stylesheet">
   <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.1/theme-chalk/index.min.css" rel="stylesheet">
   <link href="https://cdn.bootcdn.net/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet">
+
+  <% if (process.env.NODE_ENV === 'production' ) { %>
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.1/vue.min.js"></script>
-  <!-- <script src="https://cdn.bootcss.com/vuex/3.5.1/vuex.min.js"></script> -->
+  <% } %>
+  <% if (process.env.NODE_ENV !== 'production' ) { %>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.1/vue.js"></script>
+  <% } %>
+
+
   <script src="https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.1/index.min.js"></script>
